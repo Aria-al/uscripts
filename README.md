@@ -1,1 +1,1 @@
-# university_scripts
+# University scripts
