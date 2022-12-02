@@ -7,6 +7,7 @@ PlateauT = List[List[CaseT]]
 def plateau_vide () -> PlateauT :
     return [[" ", " ", " "] for i in range (3)]
 
+# table : str = '/---\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\---/'
 
 pla1 : PlateauT = plateau_vide()
 assert pla1[0][2] == " "
@@ -88,10 +89,12 @@ def pleint (pla : PlateauT) -> bool :
     q : int = 0
     i : List[str]
     j : str
+    
     for i in pla : 
         for j in i :
             if j != " " :
                 q = q + 1
+                
     return q == 9
 
 assert pleint ([["X", " ", "O"], ["O", "X", " "], ["X", " ", " "]]) == False
@@ -102,15 +105,18 @@ def tourt (pla : PlateauT, i : int, j : int) -> Optional[str] :
     Joue un tour de morpion, commençant par le joueur  
     """
     if pla[i][j] != " ":
-        return "Coup non autorisé, case déja occupé"
+        print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
+        return "* Vous ne pouvez pas jouer ici *"
 
     jouex(pla, i, j)
     
     if gagnet(pla, "X") == True :
-        return "Vous avez gagné"
+        print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
+        return "*** Gagné ***"
     
     if pleint(pla) == True :
-        return "égalité"
+        print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
+        return "Il y a égalité"
 
     a : int = int(random.random() * 2)
     b : int = int(random.random() * 2)
@@ -119,12 +125,17 @@ def tourt (pla : PlateauT, i : int, j : int) -> Optional[str] :
         b = int(random.random() * 2)
 
     joueo(pla, a, b)
+    print("L'ordinateur joue en",'"',a,",",b,'"')
     
     if gagnet(pla, "O") == True :
-        return "L'ordinateur a gagné"
+        print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
+        return '*** Perdu ***'
     
     if pleint(pla) == True :
-        return "égalité"
+        print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
+        return "Il y a égalité"
+    
+    print('/-------\\\n|',pla[0][0], pla[0][1], pla[0][2] ,'|\n|',pla[1][0], pla[1][1], pla[1][2],'|\n|',pla[2][0], pla[2][1], pla[2][2],'|\n\\-------/')
 
     return None
 
@@ -136,26 +147,30 @@ def trace_jeu () -> Image :
     Trace les cases du jeu de morpion 
     """
     q : float = 0.9
+    
     im1 : Image = draw_line(-q, -q, -q, q)
     im1_1 : Image = draw_line(-q / 3, -q, -q / 3, q)
+    
     im2 : Image = draw_line(-q, -q, q, -q)
     im2_2 : Image = draw_line(-q, -q/3, q, -q/3)
+    
     im3 : Image = draw_line(-q, q, q, q)
     im3_3 : Image = draw_line(-q, q/3, q, q/3)
+    
     im4 : Image = draw_line(q, -q, q, q)
     im4_4 : Image = draw_line(q/3, -q, q/3, q)
         
     return overlay(im1, im1_1, im2, im2_2, im3, im3_3, im4, im4_4)
-
-morpion_1 : Image = trace_jeu()
 
 def trace_croix (jeu_morp : Image, i : int, j : int) -> Image :
     """
     Trace une croix dans le jeu de morpion au coordonnées indiqués
     """
     coordinate_list : List[float] = [-0.9, -0.3, 0.3]
+    
     im1 : Image = draw_line(coordinate_list[i] + 0.1, coordinate_list[j] + 0.1, coordinate_list[i] + 0.5, coordinate_list[j] + 0.5)
     im2 : Image = draw_line(coordinate_list[i] + 0.1, coordinate_list[j] + 0.5, coordinate_list[i] + 0.5, coordinate_list[j] + 0.1)
+    
     return overlay(jeu_morp, im1, im2)
 
 def trace_rond (jeu_morp : Image, i : int, j : int) -> Image :
@@ -163,30 +178,52 @@ def trace_rond (jeu_morp : Image, i : int, j : int) -> Image :
     Trace un rond dans le jeu de morpion au coordonnées indiqués
     """
     coordinate_list : List[float] = [-0.9, -0.3, 0.3]
+    
     im1 : Image = draw_ellipse(coordinate_list[i] + 0.1, coordinate_list[j] + 0.1, coordinate_list[i] + 0.5, coordinate_list[j] + 0.5)
+    
     return overlay(jeu_morp, im1)
 
-    
-
-
-
-
-def tour_morpion_complet (img_pla : Image, pla : PlateauT, i : int, j : int) -> Optional[str] : 
+def trace_morpion (pla : PlateauT) -> Image :
     """
-    Joue un tour de morpion, commençant par le joueur  
+    Trace un jeu de morpion à partir d'un jeu donné 
+    """
+    new_img : Image = trace_jeu()
+    x : int
+    
+    for x in range(3) :
+        y : int
+        
+        for y in range(3) :
+            
+            if pla[x][y] == 'X':
+                im_temp_croix : Image = trace_croix(new_img, x, y)
+                new_img = overlay(im_temp_croix, new_img)
+                
+            elif pla[x][y] == 'O' :
+                im_temp_rond : Image = trace_rond(new_img, x, y)
+                new_img = overlay(im_temp_rond, new_img)
+                
+    return new_img
+
+
+def tour_morpion_complet (pla : PlateauT, i : int, j : int) -> Optional[str] : 
+    """
+    Joue un tour entier de morpion
     """
     if pla[i][j] != " ":
-        return "Coup non autorisé, case déja occupé"
+        show_image(trace_morpion(pla))
+        return "* Vous ne pouvez pas jouer ici *"
 
     jouex(pla, i, j)
-    trace_croix(img_pla, i, j)
-    
-    if gagnet(pla, "X") == True :
-        return "Vous avez gagné"
-    
-    if pleint(pla) == True :
-        return "égalité"
 
+    if gagnet(pla, "X") == True :
+        show_image(trace_morpion(pla))
+        return "*** Gagné ***"
+
+    if pleint(pla) ==  True :
+        show_image(trace_morpion(pla))
+        return "Le tableau est plein, il y a égalité"       
+    
     a : int = int(random.random() * 2)
     b : int = int(random.random() * 2)
     while pla[a][b] != " " :
@@ -194,19 +231,19 @@ def tour_morpion_complet (img_pla : Image, pla : PlateauT, i : int, j : int) -> 
         b = int(random.random() * 2)
 
     joueo(pla, a, b)
-    trace_rond(img_pla, a, b)
-    
-    if gagnet(pla, "O") == True :
-        return "L'ordinateur a gagné"
+    print("L'ordinateur joue en",'"',a,",",b,'"')
 
-    
-    if pleint(pla) == True :
-        return "égalité"
+    if gagnet(pla, "O") == True : 
+        show_image(trace_morpion(pla))
+        return "*** Perdu ***" 
+
+    if pleint(pla) ==  True :
+        show_image(trace_morpion(pla))
+        return "Le tableau est plein, il y a égalité" 
+
+    show_image(trace_morpion(pla))
+
     return None
-
-
-# tour_morpion_complet(morpion_1, plat_essai, 0, 0)
-# show_image(morpion_1)
 
 
 
